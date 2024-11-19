@@ -4,13 +4,14 @@ import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import OTPTextView from 'react-native-otp-textinput';
 import { Button } from 'react-native-paper';
 import axios from 'axios';
-
+import LottieView from 'lottie-react-native';
 
 const { height } = Dimensions.get('window');
 
 const OTPVerify = ({ handle, email }) => {
   const otpInput = useRef(null);
   const [text, setText] = useState('');
+  const [Loading, setLoading] = useState(false);
 
   const clearText = () => {
     otpInput.current?.clear();
@@ -22,7 +23,13 @@ const OTPVerify = ({ handle, email }) => {
   };
   const HandleOTPCheck = async () => {
     // const otp = otpInput.current?.getText();
+    console.log({
+      "email": email,
+      "otp": text
+    });
+
     try {
+      setLoading(true);
       const response = await axios.post(
         'https://foodappbackend-chw3.onrender.com/api/eVerify/verify-otp',
         {
@@ -40,7 +47,9 @@ const OTPVerify = ({ handle, email }) => {
       console.log(response.data);
       handle();
     } catch (error) {
-      
+      console.log(error);
+    } finally{
+      setLoading(false);
     }
   }
   const maskedEmail = email.indexOf('@') > 2
@@ -83,15 +92,36 @@ const OTPVerify = ({ handle, email }) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <Button
-        style={{ marginTop: height * 0.42, backgroundColor: 'black', height: height * 0.065 }}
-        mode="outlined"
-        className="pt-2 rounded-xl"
-        labelStyle={{ color: 'white' }}
+      <TouchableOpacity
+        style={{
+          marginTop: Error? height * 0.455: height * 0.5,
+          backgroundColor: 'black',
+          height: height * 0.065,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 12,
+          paddingHorizontal: 16,
+        }}
         onPress={() => HandleOTPCheck()}
-      >
-        <Text style={{ fontFamily: 'Poppins-Medium', color: 'white' }} className='text-xl'>Verify</Text>
-      </Button>
+        activeOpacity={0.8}>
+        {Loading ? (
+          <LottieView
+            source={require('../assets/Images/loading.json')}
+            autoPlay
+            style={{width: 50, height: 50}}
+          />
+        ) : (
+          <Text
+            style={{
+              fontSize: 18,
+              lineHeight: 18 * 1.4,
+              color: 'white',
+              fontFamily: 'Poppins-SemiBold',
+            }}>
+            Verify OTP
+          </Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 };

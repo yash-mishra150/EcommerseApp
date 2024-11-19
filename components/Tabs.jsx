@@ -1,64 +1,149 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome6';
-import OrderPage from '../pages/main/OrderPage/OrderPage';
-import Setting from '../pages/main/Setting';
-import ProductPage from '../pages/main/ProductPage/ProductPage';
-import TransactionPage from '../pages/main/TransactionPage';
+import {Text} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import HomePage from '../pages/OtherPages/HomePage';
+import {useTheme} from 'react-native-paper';
+import CategoryPage from '../pages/OtherPages/CategoryPage';
+import FavoritePage from '../pages/OtherPages/FavoritePage';
+import OrdersPage from '../pages/OtherPages/OrdersPage';
 
 const Tab = createBottomTabNavigator();
 
 const Tabs = () => {
-    return (
-        <NavigationContainer>
-            <Tab.Navigator
-                screenOptions={({ route }) => ({
-                    tabBarStyle: {
-                        borderColor: '#7b7b7d',
-                        backgroundColor: 'black', // Background color of the tab bar
-                        borderTopLeftRadius: 15, // Rounded corners
-                        borderTopRightRadius: 15, // Rounded corners
-                        elevation: 0, // Removes shadow on Android
-                        position: 'relative',
-                        shadowOpacity: 0, // Removes shadow on iOS
-                        height: 70, // Optional: Adjust height
-                        paddingBottom: 20, // Optional: Add padding to the bottom
-                        paddingTop: 5,
-                    },
-                    tabBarLabelStyle: {
-                        fontSize: 12, // Optional: Adjust font size
-                    },
-                    // Define icons with manual color changes
-                    tabBarIcon: ({ focused, size }) => {
-                        let iconName;
-                        let iconColor = focused ? '#6db432' : 'gray'; // Green for active, gray for inactive
-
-                        if (route.name === 'Orders') {
-                            iconName = 'cart-shopping';
-                        } else if (route.name === 'Inventory') {
-                            iconName = 'cubes-stacked';
-                        } else if (route.name === 'Transaction') {
-                            iconName = 'money-bill-trend-up';
-                        } else if (route.name === 'Profile') {
-                            iconName = 'chalkboard-user';
-                        }
-
-                        return <FontAwesome name={iconName} color={iconColor} size={size} />;
-                    },
-                    // Label color based on focus
-                    tabBarLabelStyle: {
-                        color: (focused) => (focused ? '#6db432' : 'gray'),
-                    },
-                })}
-            >
-                <Tab.Screen name="Orders" component={OrderPage} options={{ headerShown: false }} />
-                <Tab.Screen name="Inventory" component={ProductPage} options={{ headerShown: false }} />
-                <Tab.Screen name="Transaction" component={TransactionPage} options={{ headerShown: false }} />
-                <Tab.Screen name="Profile" component={Setting} options={{ headerShown: false }} />
-            </Tab.Navigator>
-        </NavigationContainer>
-    );
+  const {colors, dark} = useTheme();
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          elevation: 0,
+          backgroundColor: 'white',
+          position: 'relative',
+          shadowOpacity: 0, // Removes shadow on iOS
+          height: 70, // Adjust height
+          paddingBottom: 10, // Padding to the bottom
+          paddingTop: 10,
+        },
+        tabBarLabelStyle: {
+          fontFamily: 'Poppins-SemiBold', // Set the font family
+          color: 'black',
+          fontSize: 10, // Adjust font size as needed
+        },
+        tabBarIconStyle: {
+          color: 'black', // Color of the icons
+          size: 20, // Adjust icon size
+        },
+        tabBarActiveTintColor: 'black', // Active icon/text color
+        tabBarInactiveTintColor: 'gray', // Inactive icon/text color
+      }}>
+      <Tab.Screen
+        name="Home"
+        component={HomePage}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused, color, size}) => (
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'} 
+              color={color}
+              size={size}
+            />
+          ),
+          tabBarLabel: ({focused}) => (
+            <Text
+              style={{
+                fontFamily: focused ? 'Poppins-SemiBold' : 'Poppins-Regular', 
+                color: focused ? 'black' : 'grey', 
+                fontSize: 12,
+              }}>
+              Home
+            </Text>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Category"
+        component={CategoryPage}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused, color, size}) => (
+            <MaterialCommunityIcons
+              name='hanger' 
+              color={color}
+              size={size}
+            />
+          ),
+          tabBarLabel: ({focused}) => (
+            <Text
+              style={{
+                fontFamily: focused ? 'Poppins-SemiBold' : 'Poppins-Regular', 
+                color: focused ? 'black' : 'grey', 
+                fontSize: 12,
+              }}>
+              Explore
+            </Text>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Favourite"
+        component={FavoritePage}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused, color, size}) => (
+            <Ionicons
+              name={focused ? 'heart-sharp' : 'heart-outline'} // Change icon based on focus
+              color={color}
+              size={size}
+            />
+          ),
+          tabBarLabel: ({focused}) => (
+            <Text
+              style={{
+                fontFamily: focused ? 'Poppins-SemiBold' : 'Poppins-Regular', // Conditional font family
+                color: focused ? 'black' : 'grey', // Optional: change color based on selection
+                fontSize: 12,
+              }}>
+              Favourite
+            </Text>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Orders"
+        component={OrdersPage}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused, color, size}) =>
+            focused ? (
+              <Fontisto
+                name='dropbox' // Change icon based on focus
+                color={color}
+                size={size}
+              />
+            ) : (
+              <SimpleLineIcons
+                name='social-dropbox' // Change icon based on focus
+                color={color}
+                size={size}
+              />
+            ),
+          tabBarLabel: ({focused}) => (
+            <Text
+              style={{
+                fontFamily: focused ? 'Poppins-SemiBold' : 'Poppins-Regular', // Conditional font family
+                color: focused ? 'black' : 'grey', // Optional: change color based on selection
+                fontSize: 12,
+              }}>
+              Orders
+            </Text>
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
 };
-
 export default Tabs;

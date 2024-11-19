@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -7,16 +7,14 @@ const { width, height } = Dimensions.get('window');
 
 const ManualVerify = () => {
     const navigation = useNavigation();
-
-    const handleVerify = () => {
-        // Simulate API request
-        console.log('Verifying...');
-        // Navigate to another screen or show a message
-        navigation.navigate('Login'); // Change 'Login' to your target screen name
-    };
+    useEffect(() => {
+        setTimeout(() => {
+            navigation.navigate('Login');
+        }, 1500);
+    }, [])
 
     return (
-        <View className='items-center' style={{marginTop: height*0.03 }} >
+        <View className='items-center' style={{ marginTop: height * 0.03 }} >
             <LottieView
                 source={require('../assets/Images/checkmark-animation.json')} // Replace with your JSON file path
                 autoPlay
@@ -28,7 +26,7 @@ const ManualVerify = () => {
                 Registration Complete
             </Text>
             <Text style={styles.text}>
-                You are now eligible for manual Verification. Further instructions will be sent to your email.
+                You are verified and will be redirected to the login page shortly.
             </Text>
             {/* <TouchableOpacity
                 style={styles.button}
@@ -69,7 +67,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         padding: 16,
         borderRadius: 12,
-        marginTop: height*0.34,
+        marginTop: height * 0.34,
         width: width * 0.9,
         alignItems: 'center',
     },

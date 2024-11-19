@@ -7,40 +7,14 @@ import LottieView from 'lottie-react-native';
 
 const { height, width } = Dimensions.get('window');
 
-const RegisterForm = ({ handle, setemail }) => {
+const RegisterForm = ({ handle, Email }) => {
   const [Name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(Email);
   const [phone, setphone] = useState('');
   const [password, setpassword] = useState('');
   const [Loading, setLoading] = useState(false);
   const [Error, setError] = useState('');
 
-  const SendOTP = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        'https://foodappbackend-chw3.onrender.com/api/eVerify/send-otp',
-        {
-          "email": email
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            api_key: 'f2d9c3e5b28347763fcb57db43a24bca',
-          },
-        }
-      );
-
-
-      console.log(response.data);
-      handle();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const HandleSubmit = async () => {
     setLoading(true);
@@ -62,17 +36,15 @@ const RegisterForm = ({ handle, setemail }) => {
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            ContentType: 'application/json',
             Accept: 'application/json',
             api_key: 'f2d9c3e5b28347763fcb57db43a24bca',
           },
         }
       );
 
-
+      handle();
       console.log(response.data);
-      setemail(email);
-      SendOTP();
 
     } catch (error) {
 
