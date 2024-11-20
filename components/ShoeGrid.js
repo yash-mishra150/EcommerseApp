@@ -1,17 +1,66 @@
-import React from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import { TouchableOpacity, Image, FlatList, Text, View, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const { height, width } = Dimensions.get('window');
 
 const ShoesGrid = ({ Shoes, navigation }) => {
+  const [favorites, setFavorites] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadFavorites = async () => {
+        try {
+          const storedFavorites = await AsyncStorage.getItem('favorites');
+          if (storedFavorites) {
+            setFavorites(JSON.parse(storedFavorites));
+          }
+        } catch (error) {
+          console.error('Failed to load favorites:', error);
+        }
+      };
+
+      loadFavorites();
+
+
+      return () => { };
+    }, [])
+  );
+  const toggleFavorite = async (itemId) => {
+    try {
+      let updatedFavorites = [...favorites];
+      const isFavorited = updatedFavorites.includes(itemId);
+
+      if (isFavorited) {
+
+        updatedFavorites = updatedFavorites.filter((id) => id !== itemId);
+      } else {
+
+        updatedFavorites.push(itemId);
+      }
+
+
+      await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+      setFavorites(updatedFavorites);
+    } catch (error) {
+      console.error('Failed to update favorites:', error);
+    }
+  };
+
+
+  const isFavorite = (itemId) => {
+    return favorites.includes(itemId);
+  };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => navigation.navigate('Shoes', { item })}
       style={{
         backgroundColor: 'white',
-        height: height * 0.35,
+        height: height * 0.30,
         width: width * 0.44,
         padding: 12,
         margin: 8,
@@ -33,6 +82,16 @@ const ShoesGrid = ({ Shoes, navigation }) => {
         }}
         resizeMode="cover"
       />
+      <TouchableOpacity
+        className="absolute top-5 right-5"
+        onPress={() => toggleFavorite(item.id)}>
+        {isFavorite(item.id) ? (
+          <AntDesign name="heart" size={20} color="red" />
+        ) : (
+          <AntDesign name="hearto" size={20} color="black" />
+        )}
+      </TouchableOpacity>
+
       <Text
         style={{
           fontFamily: 'Poppins-SemiBold',
@@ -46,7 +105,7 @@ const ShoesGrid = ({ Shoes, navigation }) => {
       <Text
         style={{
           fontFamily: 'Poppins-Regular',
-          fontSize: 14,
+          fontSize: 12,
           color: '#6c757d',
           marginTop: 4,
         }}
@@ -58,7 +117,6 @@ const ShoesGrid = ({ Shoes, navigation }) => {
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          marginTop: 10,
         }}
       >
         <Text
@@ -66,8 +124,6 @@ const ShoesGrid = ({ Shoes, navigation }) => {
             fontFamily: 'Poppins-SemiBold',
             fontSize: 16,
             color: 'black',
-            marginLeft: 8,
-            marginTop: 2,
           }}
         >
           &#8377;{(item.allProducts[0]?.productPrice * 80).toFixed(2)}
@@ -139,7 +195,7 @@ const ShoesGrid = ({ Shoes, navigation }) => {
       numColumns={2}
       contentContainerStyle={{
         paddingHorizontal: 10,
-        paddingTop: 10,
+        paddingTop: 25,
       }}
     />
   );

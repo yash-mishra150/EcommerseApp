@@ -154,7 +154,7 @@ const HomePage = ({ navigation }) => {
                                 )}
                             </View>
                         </View>
-                        <TouchableOpacity className="bg-white h-8 px-3 rounded-full flex-row justify-center items-center">
+                        <TouchableOpacity onPress={() => navigation.navigate('Cart')} className="bg-white h-8 px-3 rounded-full flex-row justify-center items-center">
                             <Feather name="shopping-bag" color="black" size={20} />
                             <Text style={{ fontFamily: 'Poppins-Medium' }} className="text-black mt-1 mx-1">02</Text>
                         </TouchableOpacity>

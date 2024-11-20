@@ -5,6 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LottieView from 'lottie-react-native';
 
 const { height, width } = Dimensions.get('window');
 
@@ -14,7 +16,45 @@ const ProductPage = ({ navigation, route }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selected, setSelected] = useState(0);
     const [Quantity, setQuantity] = useState(1);
+    const [Loading, setLoading] = useState(false)
     const sizes = [35, 37, 39, 41, 43, 45];
+
+    const HandleAddtoCart = async () => {
+        setLoading(true);
+        console.log('Add to Cart')
+        const sessionData = await AsyncStorage.getItem('session');
+        const session = sessionData ? JSON.parse(sessionData) : null;
+        console.log(session, item)
+        try {
+            console.log({
+                token: session.token,
+                user_id: session.user.id,
+                product_id: item.allProducts[selectedIndex].productId,
+                quantity: Quantity,
+            })
+            const response = await axios.post(
+                'https://foodappbackend-chw3.onrender.com/api/cart/add',
+                {
+                    token: session.token,
+                    user_id: session.user.id,
+                    product_id: item.allProducts[selectedIndex].productId,
+                    quantity: Quantity,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        api_key: 'f2d9c3e5b28347763fcb57db43a24bca',
+                    },
+                },
+            );
+            console.log(response.data)
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
     return (
         <View className="p-4 pt-12 ">
             <StatusBar barStyle="dark-content" translucent={true} backgroundColor="transparent" />
@@ -103,7 +143,6 @@ const ProductPage = ({ navigation, route }) => {
                                     }}
                                     onPress={() => setSelectedIndex(index)}
                                 >
-                                    {/* Optionally render an icon or image */}
                                 </TouchableOpacity>
                             );
                         })}
@@ -204,13 +243,22 @@ const ProductPage = ({ navigation, route }) => {
             <TouchableOpacity
                 style={{ height: height * 0.07, width: width * 0.6, marginTop: height * 0.022 }} // Adjust marginTop as needed
                 className="bg-black rounded-full self-center justify-center items-center"
+                onPress={() => HandleAddtoCart()}
             >
-                <Text
-                    style={{ fontFamily: 'Poppins-Medium' }}
-                    className="text-white text-lg"
-                >
-                    Add to Cart
-                </Text>
+                {Loading ? (
+                    <LottieView
+                        source={require('../../assets/Images/loading.json')}
+                        autoPlay
+                        style={{ width: 50, height: 50 }}
+                    />
+                ) : (
+                    <Text
+                        style={{ fontFamily: 'Poppins-Medium' }}
+                        className="text-white text-lg"
+                    >
+                        Add to Cart
+                    </Text>
+                )}
             </TouchableOpacity>
         </View>
     )

@@ -8,6 +8,7 @@ import Tabs from './Tabs';
 import NewStaterPage from '../pages/auth/NewStaterPage';
 import { useSession } from './SessionManager';
 import ProductPage from '../pages/OtherPages/ProductPage';
+import CartPage from '../pages/OtherPages/CartPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -56,6 +57,11 @@ export default function Navigation() {
             <Stack.Screen
               name="Shoes"
               component={ProductPage}
+              options={{ headerShown: false }}
+            />
+             <Stack.Screen
+              name="Cart"
+              component={CartPage}
               options={{ headerShown: false }}
             />
           </>
