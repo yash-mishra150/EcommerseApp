@@ -6,14 +6,62 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import NetInfo from '@react-native-community/netinfo';
+import LottieView from 'lottie-react-native';
 
 const {height, width} = Dimensions.get('window');
 const NewStaterPage = ({navigation}) => {
+  const [isConnected, setIsConnected] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleRetry = () => {
+    NetInfo.fetch().then(state => {
+      setIsConnected(state.isConnected);
+    });
+  };
+
+  if (!isConnected) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <LottieView
+          source={require('../../assets/Images/NoNetwork.json')} // Use a "No Network" animation file
+          autoPlay
+          loop
+          style={{width: 200, height: 200}}
+        />
+        <Text
+          style={{fontFamily: 'Poppins-SemiBold'}}
+          className="text-black text-xl mt-4">
+          No Internet Connection
+        </Text>
+        <TouchableOpacity
+          onPress={handleRetry}
+          className="mt-6 bg-black px-10 py-3 rounded-full">
+          <Text
+            style={{fontFamily: 'Poppins-SemiBold'}}
+            className="text-white text-lg">
+            Retry
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
   return (
     <View className="flex-1">
-      <StatusBar  barStyle="light-content" translucent={true} backgroundColor="transparent" />
+      <StatusBar
+        barStyle="light-content"
+        translucent={true}
+        backgroundColor="transparent"
+      />
       <View>
         <Image
           source={require('../../assets/Images/StaterPageImage.jpeg')}

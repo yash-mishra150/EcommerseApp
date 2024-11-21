@@ -18,13 +18,27 @@ const HomePage = ({ navigation }) => {
         }, [])
     );
 
+
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const CartFetch = async () => {
+                const CartData = await AsyncStorage.getItem('cart');
+                const cart = CartData ? JSON.parse(CartData) : [];
+                const cartCount = cart.length;
+                setCartData(cartCount);
+            };
+
+            CartFetch();
+        }, [])
+    );
     let email = "yashm4720@gmail.com";
     const { logout } = useSession();
     const [ShoesData, setshoesData] = useState([]);
     const [Loading, setLoading] = useState(false);
     const [ULoading, setULoading] = useState(false);
     const [User, setUser] = useState({});
-
+    const [CartData, setCartData] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,7 +53,7 @@ const HomePage = ({ navigation }) => {
         fetchData();
     }, []);
 
-    
+
     const saveShoesData = async (shoeData) => {
         try {
             // Convert shoe data to a JSON string and save in AsyncStorage
@@ -156,7 +170,7 @@ const HomePage = ({ navigation }) => {
                         </View>
                         <TouchableOpacity onPress={() => navigation.navigate('Cart')} className="bg-white h-8 px-3 rounded-full flex-row justify-center items-center">
                             <Feather name="shopping-bag" color="black" size={20} />
-                            <Text style={{ fontFamily: 'Poppins-Medium' }} className="text-black mt-1 mx-1">02</Text>
+                            <Text style={{ fontFamily: 'Poppins-Medium' }} className="text-black mt-1 mx-1">{CartData<10 && CartData>0 ? '0'+CartData : CartData}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

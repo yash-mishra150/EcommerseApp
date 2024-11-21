@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, StatusBar } from 'react-native'
+import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, StatusBar, Alert } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -21,40 +21,54 @@ const ProductPage = ({ navigation, route }) => {
 
     const HandleAddtoCart = async () => {
         setLoading(true);
-        console.log('Add to Cart')
+        console.log('Add to Cart');
+
         const sessionData = await AsyncStorage.getItem('session');
         const session = sessionData ? JSON.parse(sessionData) : null;
-        console.log(session, item)
+        console.log(session, item);
+
         try {
-            console.log({
-                token: session.token,
-                user_id: session.user.id,
-                product_id: item.allProducts[selectedIndex].productId,
+            const CartData = await AsyncStorage.getItem('cart');
+            let cart = CartData ? JSON.parse(CartData) : [];
+
+
+            const newCartItem = {
+                name: item.productName,
+                Selected_Product: item.allProducts[selectedIndex],
                 quantity: Quantity,
-            })
-            const response = await axios.post(
-                'https://foodappbackend-chw3.onrender.com/api/cart/add',
-                {
-                    token: session.token,
-                    user_id: session.user.id,
-                    product_id: item.allProducts[selectedIndex].productId,
-                    quantity: Quantity,
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                        api_key: 'f2d9c3e5b28347763fcb57db43a24bca',
-                    },
-                },
+                size: sizes[selected],
+            };
+
+
+            const existingProductIndex = cart.findIndex(
+                (cartItem) =>
+                    cartItem.Selected_Product.productId === item.allProducts[selectedIndex].productId &&
+                    cartItem.size === sizes[selected]
             );
-            console.log(response.data)
+
+            if (existingProductIndex !== -1) {
+
+                const updatedCart = [...cart];
+                updatedCart[existingProductIndex].quantity += Quantity;
+                await AsyncStorage.setItem('cart', JSON.stringify(updatedCart));
+                Alert.alert('Product quantity updated in cart');
+            } else {
+
+                cart.push(newCartItem);
+                await AsyncStorage.setItem('cart', JSON.stringify(cart));
+                Alert.alert('Product added to cart');
+            }
+
+            console.log('Updated cart: ', cart);
         } catch (error) {
             console.log(error);
+            Alert.alert('Failed to add item to cart');
         } finally {
             setLoading(false);
         }
-    }
+    };
+
+
     return (
         <View className="p-4 pt-12 ">
             <StatusBar barStyle="dark-content" translucent={true} backgroundColor="transparent" />
