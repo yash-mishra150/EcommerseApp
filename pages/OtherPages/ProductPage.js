@@ -17,7 +17,7 @@ const ProductPage = ({ navigation, route }) => {
     const [selected, setSelected] = useState(0);
     const [Quantity, setQuantity] = useState(1);
     const [Loading, setLoading] = useState(false)
-    const sizes = [35, 37, 39, 41, 43, 45];
+    const sizes = [4, 5, 6, 7, 8, 9];
 
     const HandleAddtoCart = async () => {
         setLoading(true);
