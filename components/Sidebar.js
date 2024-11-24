@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, forwardRef, useRef, useState } from 'react';
+import React, {useImperativeHandle, forwardRef, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,11 @@ import {
   Dimensions,
   PanResponder,
 } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-const Sidebar = forwardRef(({ user }, ref) => {
+const {height, width} = Dimensions.get('window');
+const Sidebar = forwardRef(({user}, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const screenWidth = Dimensions.get('window').width;
   const sidebarWidth = screenWidth * 0.75; // Updated sidebar width (80% of screen)
@@ -75,11 +78,11 @@ const Sidebar = forwardRef(({ user }, ref) => {
           isOpen ? openSidebar() : closeSidebar();
         }
       },
-    })
+    }),
   ).current;
 
   return (
-    <View style={{ position: 'absolute', width: '100%', height: '100%' }}>
+    <View style={{position: 'absolute', width: '100%', height: '100%'}}>
       <Animated.View
         {...panResponder.panHandlers}
         style={{
@@ -87,35 +90,86 @@ const Sidebar = forwardRef(({ user }, ref) => {
           width: sidebarWidth,
           height: '100%',
           backgroundColor: 'white',
-          transform: [{ translateX: animationValue }],
-        }}
-      >
-        <View style={{ backgroundColor: '#f0f0f0', padding: 20, alignItems: 'center' }}>
+          transform: [{translateX: animationValue}],
+        }}>
+        <View
+          style={{
+            backgroundColor: '#f0f0f0',
+            padding: 20,
+            alignItems: 'center',
+          }}>
           <Image
-            source={{ uri: user.photo }}
-            style={{ width: 80, height: 80, borderRadius: 40, marginBottom: 10 }}
+           source={
+            user.photo
+              ? {uri: user.photo}
+              : require('../assets/Images/profile.jpg')
+          }
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 60,
+              marginBottom: 10,
+            }}
             alt="User Photo"
           />
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{user.name}</Text>
-          <Text style={{ color: 'gray', marginTop: 4 }}>{user.email}</Text>
-          <Text style={{ color: 'gray', marginTop: 2 }}>{user.address}</Text>
+
+          <Text
+            style={{
+              fontSize: 18,
+              fontFamily: 'Poppins-SemiBold',
+              color: 'black',
+            }}>
+            {user.name}
+          </Text>
+          <Text style={{color: 'gray', fontFamily: 'Poppins-Medium'}}>
+            {user.email}
+          </Text>
+          <Text style={{color: 'gray', fontFamily: 'Poppins-Medium'}}>
+            {user.address}
+          </Text>
         </View>
 
-        <View style={{ marginTop: 20, paddingHorizontal: 20 }}>
+        <View style={{marginTop: 10, paddingHorizontal: 20}}>
           {user.options.map((option, index) => (
             <TouchableOpacity
               key={index}
               style={{
                 paddingVertical: 15,
-                borderBottomWidth: 1,
+                borderBottomWidth: option.direction == true ? 0 : 1,
                 borderBottomColor: '#ddd',
               }}
               onPress={() => {
                 option.onPress();
                 closeSidebar();
-              }}
-            >
-              <Text style={{ fontSize: 16 }}>{option.label}</Text>
+              }}>
+              <View
+                className={`flex-row justify-between`}
+                style={{
+                  marginTop: option.direction == true ? height * 0.43 : '',
+                }}>
+                <View className="flex-row">
+                  {!option.direction == true ? (
+                    <FontAwesome5 name={option.icon} size={20} color="black" />
+                  ) : null}
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: 'black',
+                      marginLeft: 15,
+                      fontFamily: 'Poppins-SemiBold',
+                    }}>
+                    {option.label}
+                  </Text>
+                </View>
+
+                <MaterialIcons
+                  name={
+                    option.direction == true ? option.icon : 'arrow-forward-ios'
+                  }
+                  size={20}
+                  color="black"
+                />
+              </View>
             </TouchableOpacity>
           ))}
         </View>
@@ -131,8 +185,7 @@ const Sidebar = forwardRef(({ user }, ref) => {
             height: '100%',
           }}
           activeOpacity={1}
-          onPress={closeSidebar}
-        >
+          onPress={closeSidebar}>
           <Animated.View
             style={{
               flex: 1,

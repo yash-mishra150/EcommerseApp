@@ -268,7 +268,16 @@ const CartPage = ({navigation}) => {
                 marginTop: height * 0.022,
               }} // Adjust marginTop as needed
               className="bg-black rounded-full self-center justify-center items-center"
-              // onPress={() => HandleAddtoCart()}
+              onPress={() => {
+                navigation.navigate('Payment', {
+                  status: {
+                    metaData: {
+                      deliveryFee: 100, // Example delivery fee
+                    },
+                  },
+                });
+                
+              }}
             >
               {Loading ? (
                 <LottieView

@@ -46,6 +46,7 @@ const HomePage = ({navigation}) => {
   const [ULoading, setULoading] = useState(false);
   const [User, setUser] = useState({});
   const [CartData, setCartData] = useState(0);
+  const [Avator, setAvator] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,6 +59,16 @@ const HomePage = ({navigation}) => {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      const seed = Math.random().toString(36).substr(2, 5);
+      const url = `https://api.dicebear.com/6.x/avataaars/png?seed=${seed}`;
+      setAvator(url);
+    };
+
+    fetchAvatar();
   }, []);
 
   const saveShoesData = async shoeData => {
@@ -141,15 +152,35 @@ const HomePage = ({navigation}) => {
   const sidebarRef = useRef(null);
 
   const user = {
-    photo: 'https://via.placeholder.com/150',
+    photo: Avator,
     name: 'John Doe',
+    gender: 'Male',
     email: 'john.doe@example.com',
     address: '123, Main Street, City, Country',
     options: [
-      { label: 'My Orders', onPress: () => console.log('My Orders clicked') },
-      { label: 'Wallet', onPress: () => console.log('Wallet clicked') },
-      { label: 'Help & Support', onPress: () => console.log('Help clicked') },
-      { label: 'Logout', onPress: () => console.log('Logout clicked') },
+      {
+        label: 'My Orders',
+        icon: 'boxes',
+        onPress: () => navigation.navigate('Orders'),
+      },
+      {
+        label: 'Add Address',
+        icon: 'address-card',
+        onPress: () => console.log('Address Change Modal'),
+      },
+      {
+        label: 'Help & Support',
+        icon: 'hands-helping',
+        onPress: () => console.log('Help clicked'),
+      },
+      {
+        label: 'Logout',
+        icon: 'logout',
+        direction: true,
+        onPress: async () => {
+          await logout();
+        },
+      },
     ],
   };
 
@@ -172,12 +203,19 @@ const HomePage = ({navigation}) => {
 
         <View className="p-4 pt-10">
           <View className="flex-row justify-between items-center">
-            <TouchableOpacity onPress={() => sidebarRef.current.openSidebar()} className="flex-row gap-2">
+            <TouchableOpacity
+              onPress={() => sidebarRef.current.openSidebar()}
+              className="flex-row gap-2">
               <Image
                 className="rounded-full"
-                source={require('../../assets/Images/profile.jpg')}
+                source={
+                  Avator
+                    ? {uri: Avator}
+                    : require('../../assets/Images/profile.jpg')
+                }
                 style={{width: width * 0.125, height: height * 0.06}}
               />
+
               <View className="flex justify-center">
                 {ULoading ? (
                   <Text
